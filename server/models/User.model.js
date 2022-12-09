@@ -19,6 +19,7 @@ const userSchema = new Schema(
       required: [true, "Name is required."],
     },
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    image: String,
   },
   {
     timestamps: true,

@@ -18,7 +18,6 @@ const PostDetails = () => {
     getPost();
   }, []);
 
-  post && console.log(post);
   return (
     <>
       {post && (

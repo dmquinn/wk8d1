@@ -8,6 +8,8 @@ function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
   const [errorMessage, setErrorMessage] = useState(undefined);
 
   const navigate = useNavigate();
@@ -15,25 +17,40 @@ function SignupPage() {
   const handleEmail = (e) => setEmail(e.target.value);
   const handlePassword = (e) => setPassword(e.target.value);
   const handleName = (e) => setName(e.target.value);
+  const handleImage = (e) => setImage(e.target.files[0]);
 
   const API_URL = "http://localhost:5005";
 
   const handleSignupSubmit = (e) => {
     e.preventDefault();
-    // Create an object representing the request body
-    const requestBody = { email, password, name };
-
-    // Send a request to the server using axios
-
-    const authToken = localStorage.getItem("authToken");
-    console.log(authToken);
-    axios
-      .post(`${API_URL}/auth/signup`, requestBody, {
-        headers: { Authorization: `Bearer ${authToken}` },
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", "pgd5xegv");
+    data.append("cloud_name", "djiekzsxs");
+    fetch("https://api.cloudinary.com/v1_1/djiekzsxs/image/upload", {
+      method: "post",
+      body: data,
+    })
+      .then((resp) => {
+        return resp.json();
       })
-      .then((response) => {
-        console.log(response);
+      .then((data) => {
+        data && console.log(data.url);
+        return data.url;
+      })
+      .then((img) => {
+        const requestBody = { email, password, name, image: img };
+        const authToken = localStorage.getItem("authToken");
+        console.log(authToken);
+        axios
+          .post(`${API_URL}/auth/signup`, requestBody, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          })
+          .then((response) => {
+            console.log(response);
+          });
       });
+    // Create an object representing the request body
 
     // Or using a service
     // authService
@@ -67,7 +84,7 @@ function SignupPage() {
 
         <label>Name:</label>
         <input type="text" name="name" value={name} onChange={handleName} />
-
+        <input type="file" name="image" value={""} onChange={handleImage} />
         <button type="submit">Sign Up</button>
       </form>
 

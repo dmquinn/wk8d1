@@ -1,0 +1,28 @@
+.chatWindow {
+    box-shadow: 0px 0px 70px 20px rgba(0, 0, 0, 0.381);
+    position: absolute;
+    width: 400px;
+    bottom: 0px;
+    height: 400px;
+    right: 10px; 
+    height: 10px;
+    border-radius: 20px 20px 0px 0px;
+        transition: 2s;
+}
+.chatShowing {
+    box-shadow: 0px 0px 70px 20px rgba(0, 0, 0, 0.08);
+    position: absolute;
+    bottom: 0px;
+    height: 400px;
+    right: 10px; 
+    border-radius: 20px;
+    transition: 2s;
+}
+.chatButton {
+    position: absolute;
+    bottom: 0px;
+    right: 10px;
+}
+.chatButtonHide {
+    visibility: hidden;
+}

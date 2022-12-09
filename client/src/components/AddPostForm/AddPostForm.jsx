@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../context/auth.context";
-
+import { useEffect } from "react";
 const AddPost = ({ refresh }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [imgUrl, setImgUrl] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [data, setData] = useState({
+    title: "",
+    description: "",
+    number: null,
+  });
 
   const { user } = useContext(AuthContext);
 
@@ -60,8 +66,8 @@ const AddPost = ({ refresh }) => {
         />
         <label>Image:</label>
         <input
-          type="file"
-          onChange={(e) => setImage(e.target.files[0])}
+          type="number"
+          onChange={(e) => setData({ ...data, number: e.target.value })}
         ></input>
 
         <button type="submit">Add Task</button>
