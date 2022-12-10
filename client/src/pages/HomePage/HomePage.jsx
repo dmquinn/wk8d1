@@ -24,13 +24,7 @@ function HomePage() {
   return (
     <div className="homePage">
       <Link to="/posts">projects</Link>
-      {users.map((user) => {
-        return (
-          <button key={user._id} onClick={() => setChatPartner(user._id)}>
-            {user.name}
-          </button>
-        );
-      })}
+
       <button
         className={showChat ? "chatButtonHide" : "chatButton"}
         onClick={() => setShowChat(!showChat)}
@@ -38,7 +32,6 @@ function HomePage() {
         CHAT
       </button>
       <Chat showChat={showChat} chatPartner={chatPartner} />
-      {/* <FilterModal /> */}
     </div>
   );
 }

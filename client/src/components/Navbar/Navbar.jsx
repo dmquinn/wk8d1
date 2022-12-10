@@ -5,6 +5,7 @@ import { AuthContext } from "../../context/auth.context";
 
 function Navbar() {
   const { isLoggedIn, user, logOutUser } = useContext(AuthContext);
+  user && console.log(user);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
@@ -57,11 +58,7 @@ function Navbar() {
               <button className="form-control me-2" onClick={logOutUser}>
                 Log Out
               </button>
-              <img
-                src="https://avatars.githubusercontent.com/u/73913084?v=4"
-                className="profileIcon"
-                alt=""
-              />
+              <img src={user.image} className="profileIcon" alt="" />
               <p>{user.name}</p>
             </>
           ) : (

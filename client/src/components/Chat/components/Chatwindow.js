@@ -79,7 +79,7 @@ const Chatwindow = (props) => {
     }
   });
 
-  console.log(showMessages);
+  messages && console.log(showMessages);
   console.log("In chatwindow selected user:", props.selectedUser);
   return (
     <div className="chat-window">
