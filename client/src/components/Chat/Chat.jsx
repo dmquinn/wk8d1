@@ -1,59 +1,52 @@
-import React, { useEffect, useState } from "react";
-import socketIOClient from "socket.io-client";
-import { AuthContext } from "../../context/auth.context";
-import { useContext } from "react";
-import "./Chat.css";
+import React, { useState } from "react";
+import Home from "./components/Home";
+import Login from "./components/Login";
 
-const socket = socketIOClient("http://localhost:5005");
+import socket from "./socket";
 
-const Chat = ({ showChat, chatPartner }) => {
-  const [room, setRoom] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageReceived, setMessageReceived] = useState("");
+const Chat = () => {
+  const [userName, setUserName] = useState("");
+  const [usersList, addUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
 
-  const joinRoom = () => {
-    if (room !== "") {
-      socket.emit("join_room", room);
-    }
+  // useEffect(() => {
+  //   console.log("Username state is:", userName);
+  //   console.log("From useeffect:", usersList);
+  // });
+
+  const getUsername = (fetched_userName) => {
+    console.log(fetched_userName);
+    setUserName(fetched_userName);
+
+    socket.auth = { fetched_userName };
+    socket.connect();
   };
 
-  const sendMessage = () => {
-    socket.emit("send_message", { message, chatPartner });
-  };
+  socket.on("users", (users) => {
+    users.forEach((user) => {
+      user.self = user.userID === socket.id;
+    });
+    users = users.sort((a, b) => {
+      if (a.self) return -1;
+      if (b.self) return 1;
+      if (a.username < b.username) return -1;
+      return a.username > b.username ? 1 : 0;
+    });
+    addUsers(users);
+  });
 
-  useEffect(() => {
-    socket.on("receive_message", (data) => {
-      console.log(socket.id);
-      setMessageReceived(data.message);
-    });
-    socket.on("session", ({ sessionID, userID }) => {
-      // attach the session ID to the next reconnection attempts
-      socket.auth = { sessionID };
-      // store it in the localStorage
-      localStorage.setItem("sessionID", sessionID);
-      // save the ID of the user
-      socket.userID = userID;
-    });
-  }, [socket]);
+  socket.on("user connected", (user) => {
+    addUsers([...usersList, user]);
+  });
 
   return (
-    <div className={showChat ? "chatApp active" : "chatApp"}>
-      <ul>{messageReceived}</ul>
-      <div className={showChat ? "inputContainer" : "inputContainerHidden"}>
-        <input
-          placeholder="Room Number..."
-          onChange={(event) => {
-            setRoom(event.target.value);
-          }}
-        />
-        <button onClick={joinRoom}> Join Room</button>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <button onClick={sendMessage}>Send message</button>
-      </div>
+    <div className="App">
+      {/* <Home user={userName} /> */}
+      {!userName ? (
+        <Login submit={(event) => getUsername(event)} />
+      ) : (
+        <Home user={userName} connectedUsers={usersList} />
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Chat from "../../components/Chat/Chat";
+import FilterModal from "../../components/FilterModal";
 
 import "./HomePage.css";
 
@@ -36,9 +37,8 @@ function HomePage() {
       >
         CHAT
       </button>
-      <div className={showChat ? "chatWindow chatShowing" : "chatWindow"}>
-        <Chat showChat={showChat} chatPartner={chatPartner} />
-      </div>
+      <Chat showChat={showChat} chatPartner={chatPartner} />
+      {/* <FilterModal /> */}
     </div>
   );
 }

@@ -7,6 +7,10 @@ app.use(cors());
 
 const server = http.createServer(app);
 
+server.listen(5005, () => {
+  console.log("SERVER IS RUNNING");
+});
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -14,47 +18,36 @@ const io = new Server(server, {
   },
 });
 
-// io.on("connection", (socket) => {
-//   console.log(`User Connected: ${socket.id}`);
-
-//   socket.on("join_room", (data) => {
-//     socket.join(data);
-//   });
-
-//   socket.on("send_message", (data) => {
-//     socket.to(data.room).emit("receive_message", data);
-//   });
-// });
 io.use((socket, next) => {
-  const sessionID = socket.handshake.auth.sessionID;
-  if (sessionID) {
-    // find existing session
-    const session = sessionStore.findSession(sessionID);
-    if (session) {
-      socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      socket.username = session.username;
-      return next();
-    }
-  }
-  const username = socket.handshake.auth.username;
-  if (!username) {
-    return next(new Error("invalid username"));
-  }
-  // create new session
-  socket.sessionID = randomId();
-  socket.userID = randomId();
+  const username = socket.handshake.auth.fetched_userName;
   socket.username = username;
   next();
 });
+
 io.on("connection", (socket) => {
-  // ...
-  socket.emit("session", {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
+      key: id,
+    });
+  }
+  socket.emit("users", users);
+  console.log(users);
+
+  socket.broadcast.emit("user connected", {
+    userID: socket.id,
+    username: socket.username,
+    key: socket.id,
+    self: false,
   });
-  // ...
-});
-server.listen(5005, () => {
-  console.log("SERVER IS RUNNING");
+
+  socket.on("private message", ({ content, to }) => {
+    console.log("Content:", content, " To:", to);
+    socket.to(to).emit("private message", {
+      content,
+      from: socket.id,
+    });
+  });
 });
