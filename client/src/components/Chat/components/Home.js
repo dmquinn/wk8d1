@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Chatwindow from "./Chatwindow";
 import Sidebar from "./Sidebar";
-const Home = (props) => {
+const Home = ({ connectedUsers, user }) => {
   const [selectedUser, setSelectedUser] = useState({});
   const [userSelected, setUserSelected] = useState(false); //So that any chat window is not rendered when app is loaded
 
-  console.log("in home", props.connectedUsers);
+  connectedUsers && console.log("in home", connectedUsers);
 
   const getSelectedUser = (user) => {
     setSelectedUser(user);
@@ -17,20 +17,15 @@ const Home = (props) => {
     <div className="chat-container p-5">
       <div>
         <div className="user-list"></div>
-        <Sidebar
-          connectedUsers={props.connectedUsers}
-          selectUser={getSelectedUser}
-        />
+        <Sidebar connectedUsers={connectedUsers} selectUser={getSelectedUser} />
       </div>
-      {userSelected ? (
+      {userSelected && (
         <div>
           <Chatwindow
             selectedUser={selectedUser}
-            connectedUsers={props.connectedUsers}
+            connectedUsers={connectedUsers}
           />
         </div>
-      ) : (
-        <div className="no-render-message">Click chat to start messaging</div>
       )}
     </div>
   );

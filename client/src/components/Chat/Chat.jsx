@@ -1,26 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/auth.context";
 import Home from "./components/Home";
 import Login from "./components/Login";
 
 import socket from "./socket";
 
 const Chat = () => {
-  const [userName, setUserName] = useState("");
+  const [username, setUserName] = useState("");
   const [usersList, addUsers] = useState([]);
   const [messages, setMessages] = useState([]);
 
-  // useEffect(() => {
-  //   console.log("Username state is:", userName);
-  //   console.log("From useeffect:", usersList);
-  // });
-
-  const getUsername = (fetched_userName) => {
-    console.log(fetched_userName);
-    setUserName(fetched_userName);
-
-    socket.auth = { fetched_userName };
-    socket.connect();
-  };
+  const { currentUser } = useContext(AuthContext);
 
   socket.on("users", (users) => {
     users.forEach((user) => {
@@ -36,17 +26,20 @@ const Chat = () => {
   });
 
   socket.on("user connected", (user) => {
-    addUsers([...usersList, user]);
+    if (!usersList.includes(user)) {
+      addUsers([...usersList, user]);
+    } else console.log("HELLO, NO");
   });
-
+  useEffect(() => {
+    if (currentUser) {
+      setUserName(currentUser.name);
+      socket.auth = { username };
+      socket.connect();
+    }
+  }, [currentUser, username]);
   return (
     <div className="App">
-      {/* <Home user={userName} /> */}
-      {!userName ? (
-        <Login submit={(event) => getUsername(event)} />
-      ) : (
-        <Home user={userName} connectedUsers={usersList} />
-      )}
+      <Home user={username} connectedUsers={usersList} />
     </div>
   );
 };

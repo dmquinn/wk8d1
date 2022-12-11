@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/auth.context";
 
 function Navbar() {
-  const { isLoggedIn, user, logOutUser } = useContext(AuthContext);
+  const { isLoggedIn, currentUser, logOutUser } = useContext(AuthContext);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
@@ -62,7 +62,7 @@ function Navbar() {
                 className="profileIcon"
                 alt=""
               />
-              <p>{user.name}</p>
+              <p>{currentUser.name}</p>
             </>
           ) : (
             <>

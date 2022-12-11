@@ -19,7 +19,8 @@ const io = new Server(server, {
 });
 
 io.use((socket, next) => {
-  const username = socket.handshake.auth.fetched_userName;
+  const username = socket.handshake.auth.username;
+
   socket.username = username;
   next();
 });
@@ -27,11 +28,12 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      userID: id,
-      username: socket.username,
-      key: id,
-    });
+    if (!users[username].includes(socket.username))
+      users.push({
+        userID: id,
+        username: socket.username,
+        key: id,
+      });
   }
   socket.emit("users", users);
   console.log(users);
